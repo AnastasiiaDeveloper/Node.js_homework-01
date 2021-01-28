@@ -49,11 +49,13 @@ async function addContact(name, email, phone) {
 }
 async function updateContact(id, body) {
   try {
-    if (
-      body.name === undefined &&
-      body.email === undefined &&
-      body.phone === undefined
-    ) {
+    function isEmpty(obj) {
+      for (let key in obj) {
+        return true;
+      }
+      return false;
+    }
+    if (isEmpty(body) === false) {
       return { inf: false, message: "missing fields" };
     } else {
       const data = await listContacts();
