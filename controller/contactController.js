@@ -1,7 +1,11 @@
 const Cont = require("./../models/contactModel");
 const getContact = async (req, res) => {
-  const data = await Cont.find();
-  res.json(data);
+  try {
+    const data = await Cont.find();
+    res.json(data);
+  } catch (e) {
+    console.log(e);
+  }
 };
 const getIdContact = async (req, res) => {
   try {
@@ -9,11 +13,9 @@ const getIdContact = async (req, res) => {
     // console.log()
     if (data !== null) {
       res.json(data);
-    } else {
-      res.status(404).send({ message: "Not found" });
     }
   } catch (e) {
-    console.log(e);
+    res.status(404).send({ message: "Not found" });
   }
 };
 const postContact = async (req, res) => {
@@ -42,11 +44,9 @@ const deleteContact = async (req, res) => {
     console.log(data);
     if (data !== null) {
       res.status(200).send({ message: "contact deleted" });
-    } else {
-      res.status(404).send({ message: "Not found" });
     }
   } catch (e) {
-    console.log(e);
+    res.status(404).send({ message: "Not found" });
   }
 };
 const patchContact = async (req, res) => {
