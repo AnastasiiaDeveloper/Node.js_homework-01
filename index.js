@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -14,6 +15,7 @@ app.use(morgan("dev"));
 app.use("/api/contacts", routes);
 app.use("/api/auth", routesUsers);
 app.use("/api/users/", routesUsers);
+
 mongoose.set("useFindAndModify", false);
 async function start() {
   try {
@@ -29,4 +31,5 @@ async function start() {
     process.exit(1);
   }
 }
+
 start();
