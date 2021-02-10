@@ -6,12 +6,13 @@ const {
   patchContact,
   deleteContact,
 } = require("./../controller/contactController");
+const { authenticateJWT } = require("./../middleware/auth");
 
 const router = Router();
 
-router.get("/", getContact);
-router.get("/:contactId", getIdContact);
-router.post("/", postContact);
-router.delete("/:contactId", deleteContact);
-router.patch("/:contactId", patchContact);
+router.get("/", authenticateJWT, getContact);
+router.get("/:contactId", authenticateJWT, getIdContact);
+router.post("/", authenticateJWT, postContact);
+router.delete("/:contactId", authenticateJWT, deleteContact);
+router.patch("/:contactId", authenticateJWT, patchContact);
 module.exports = router;

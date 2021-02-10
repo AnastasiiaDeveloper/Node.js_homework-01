@@ -6,12 +6,16 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const routes = require("./routes/contactsRouter");
+const routesUsers = require("./routes/usersRouter");
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("dev"));
 app.use("/api/contacts", routes);
+app.use("/api/auth", routesUsers);
+app.use("/api/users/", routesUsers);
+
 mongoose.set("useFindAndModify", false);
 async function start() {
   try {
@@ -27,4 +31,5 @@ async function start() {
     process.exit(1);
   }
 }
+
 start();
