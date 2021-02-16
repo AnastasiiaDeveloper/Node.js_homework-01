@@ -1,4 +1,5 @@
 const User = require("./../models/userModel");
+const { generationAvatar } = require("./../avatar-generation/avatarMethod");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
@@ -11,6 +12,7 @@ const schemaData = Joi.object({
 const registerReq = async (req, res) => {
   try {
     const dataReq = await schemaData.validateAsync(req.body);
+    const url = await generationAvatar();
     const { email, password } = dataReq;
     const saltRounds = 10;
     const saltPassword = await bcrypt.hash(password, saltRounds);
@@ -19,6 +21,7 @@ const registerReq = async (req, res) => {
       const user = new User({
         email,
         password: saltPassword,
+        avatarURL: url,
       });
       const a = await user.save();
 
