@@ -102,7 +102,22 @@ const currentReq = async (req, res) => {
     res.status(e.error).send({ message: e.ResponseBody });
   }
 };
+const patchReq = async (req, res) => {
+  try {
+    const dataValidate = await schema.validateAsync(req.body);
+
+    const data = await Cont.findByIdAndUpdate(
+      req.params.contactId,
+      dataValidate
+    );
+
+    res.status(200).send({ message: data });
+  } catch (e) {
+    res.status(400).send({ message: "missing fields" });
+  }
+};
 exports.logoutReq = logoutReq;
 exports.loginReq = loginReq;
 exports.registerReq = registerReq;
 exports.currentReq = currentReq;
+exports.patchReq = patchReq;
