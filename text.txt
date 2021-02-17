@@ -1,4 +1,8 @@
-
+{
+    "email": "new@mail.com",
+    "password": "1234qwerty"
+}
+public/images/109c6a2b-689e-4e53-991a-13bdcd569f04.png
 const createError = require('http-errors')
 const express = require('express')
 const path = require('path')

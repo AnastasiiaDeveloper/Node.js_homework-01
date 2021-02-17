@@ -1,5 +1,8 @@
 const User = require("./../models/userModel");
-const { generationAvatar } = require("./../avatar-generation/avatarMethod");
+const {
+  generationAvatar,
+  deleteImg,
+} = require("./../avatar-generation/avatarMethod");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
@@ -103,19 +106,23 @@ const currentReq = async (req, res) => {
   }
 };
 const patchReq = async (req, res) => {
+  const { _id, avatarURL, email } = req.user;
+
   try {
-    const dataValidate = await schema.validateAsync(req.body);
-
-    const data = await Cont.findByIdAndUpdate(
-      req.params.contactId,
-      dataValidate
-    );
-
-    res.status(200).send({ message: data });
+    const data = await User.findByIdAndUpdate(_id, {
+      avatarURL: req.file.path,
+      email: req.body.email ? req.body.email : email,
+    });
+    deleteImg(avatarURL);
+    res.status(200).send({
+      avatarURL: req.file,
+      email: data.email,
+    });
   } catch (e) {
-    res.status(400).send({ message: "missing fields" });
+    res.status(401).send({ message: "Not authorized" });
   }
 };
+
 exports.logoutReq = logoutReq;
 exports.loginReq = loginReq;
 exports.registerReq = registerReq;

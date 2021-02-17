@@ -6,6 +6,7 @@ const {
   logoutReq,
   currentReq,
   patchReq,
+  patchUpdateReq,
 } = require("./../controller/userController");
 const { authenticateJWT } = require("./../middleware/auth");
 
@@ -14,11 +15,11 @@ const router = Router();
 router.post("/register", registerReq);
 router.post("/login", loginReq);
 router.post("/logout", authenticateJWT, logoutReq);
-router.patch("/avatars", authenticateJWT, patchReq);
-router.post(
-  "/current",
+router.patch(
+  "/avatars",
   authenticateJWT,
   fileMiddleware.single("avatar"),
-  currentReq
+  patchReq
 );
+router.post("/current", authenticateJWT, currentReq);
 module.exports = router;
