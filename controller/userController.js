@@ -115,7 +115,7 @@ const patchReq = async (req, res) => {
     });
     deleteImg(avatarURL);
     res.status(200).send({
-      avatarURL: req.file,
+      avatarURL: req.file.path,
       email: data.email,
     });
   } catch (e) {
