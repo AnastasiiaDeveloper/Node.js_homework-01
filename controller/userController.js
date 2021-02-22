@@ -4,19 +4,11 @@ const {
   deleteImg,
 } = require("./../avatar-generation/avatarMethod");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const sendgrid = require("nodemailer-sendgrid-transport");
-const regEmail = require("./../mail/registration");
+const regEmail = require("../email/registration");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const { v4: uuidv4 } = require("uuid");
 Joi.objectId = require("joi-objectid")(Joi);
-
-const transporter = nodemailer.createTransport(
-  sendgrid({
-    auth: { api_key: process.env.KEY_SEND_GRID },
-  })
-);
 
 const schemaData = Joi.object({
   email: Joi.string().email({ tlds: { allow: false } }),
@@ -39,7 +31,7 @@ const registerReq = async (req, res) => {
         verificationToken: tokenId,
       });
       const a = await user.save();
-      transporter.sendMail(regEmail(email, tokenId));
+      regEmail(email, tokenId);
       res.json(a);
     } else {
       throw { error: 409, ResponseBody: "Email in use" };
