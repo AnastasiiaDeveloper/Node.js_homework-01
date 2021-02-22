@@ -6,7 +6,7 @@ const {
   logoutReq,
   currentReq,
   patchReq,
-  patchUpdateReq,
+  verificationTokenReq,
 } = require("./../controller/userController");
 const { authenticateJWT } = require("./../middleware/auth");
 
@@ -22,4 +22,5 @@ router.patch(
   patchReq
 );
 router.post("/current", authenticateJWT, currentReq);
+router.get("/verify/:verificationToken", verificationTokenReq);
 module.exports = router;

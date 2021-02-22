@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("dev"));
 app.use("/api/contacts", routes);
-app.use("/api/auth", routesUsers);
+app.use("/api/auth/", routesUsers);
 app.use("/api/users/", routesUsers);
 mongoose.set("useFindAndModify", false);
 app.use("/public/images", express.static(__dirname + "/public/images"));

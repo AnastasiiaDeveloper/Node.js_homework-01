@@ -9,6 +9,7 @@ const sendgrid = require("nodemailer-sendgrid-transport");
 const regEmail = require("./../mail/registration");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
+const { v4: uuidv4 } = require("uuid");
 Joi.objectId = require("joi-objectid")(Joi);
 
 const transporter = nodemailer.createTransport(
@@ -29,14 +30,16 @@ const registerReq = async (req, res) => {
     const saltRounds = 10;
     const saltPassword = await bcrypt.hash(password, saltRounds);
     const verifMail = await User.findOne({ email: email });
+    const tokenId = uuidv4();
     if (verifMail === null) {
       const user = new User({
         email,
         password: saltPassword,
         avatarURL: url,
+        verificationToken: tokenId,
       });
       const a = await user.save();
-      transporter.sendMail(regEmail(email));
+      transporter.sendMail(regEmail(email, tokenId));
       res.json(a);
     } else {
       throw { error: 409, ResponseBody: "Email in use" };
@@ -131,9 +134,27 @@ const patchReq = async (req, res) => {
     res.status(401).send({ message: "Not authorized" });
   }
 };
+const verificationTokenReq = async (req, res) => {
+  const token = req.params["verificationToken"];
+  console.log(token);
+  try {
+    const dataUser = await User.findOne({ verificationToken: token });
+    if (dataUser === null) {
+      throw "Not authorized";
+    } else {
+      await User.findByIdAndUpdate(dataUser._id, {
+        $unset: { verificationToken: token },
+      });
+      res.status(200).send({ message: "activated" });
+    }
+  } catch (e) {
+    res.status(404).send({ message: "Not authorized" });
+  }
+};
 
 exports.logoutReq = logoutReq;
 exports.loginReq = loginReq;
 exports.registerReq = registerReq;
 exports.currentReq = currentReq;
 exports.patchReq = patchReq;
+exports.verificationTokenReq = verificationTokenReq;
