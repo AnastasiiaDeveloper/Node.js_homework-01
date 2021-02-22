@@ -1,6 +1,5 @@
 const express = require("express");
 const morgan = require("morgan");
-
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -15,8 +14,9 @@ app.use(morgan("dev"));
 app.use("/api/contacts", routes);
 app.use("/api/auth", routesUsers);
 app.use("/api/users/", routesUsers);
-
 mongoose.set("useFindAndModify", false);
+app.use("/public/images", express.static(__dirname + "/public/images"));
+
 async function start() {
   try {
     const url = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.xravs.mongodb.net/db-contacts`;
@@ -31,5 +31,4 @@ async function start() {
     process.exit(1);
   }
 }
-
 start();

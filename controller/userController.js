@@ -1,8 +1,21 @@
 const User = require("./../models/userModel");
+const {
+  generationAvatar,
+  deleteImg,
+} = require("./../avatar-generation/avatarMethod");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+const sendgrid = require("nodemailer-sendgrid-transport");
+const regEmail = require("./../mail/registration");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
+
+const transporter = nodemailer.createTransport(
+  sendgrid({
+    auth: { api_key: process.env.KEY_SEND_GRID },
+  })
+);
 
 const schemaData = Joi.object({
   email: Joi.string().email({ tlds: { allow: false } }),
@@ -11,6 +24,7 @@ const schemaData = Joi.object({
 const registerReq = async (req, res) => {
   try {
     const dataReq = await schemaData.validateAsync(req.body);
+    const url = await generationAvatar();
     const { email, password } = dataReq;
     const saltRounds = 10;
     const saltPassword = await bcrypt.hash(password, saltRounds);
@@ -19,9 +33,10 @@ const registerReq = async (req, res) => {
       const user = new User({
         email,
         password: saltPassword,
+        avatarURL: url,
       });
       const a = await user.save();
-
+      transporter.sendMail(regEmail(email));
       res.json(a);
     } else {
       throw { error: 409, ResponseBody: "Email in use" };
@@ -99,7 +114,26 @@ const currentReq = async (req, res) => {
     res.status(e.error).send({ message: e.ResponseBody });
   }
 };
+const patchReq = async (req, res) => {
+  const { _id, avatarURL, email } = req.user;
+
+  try {
+    const data = await User.findByIdAndUpdate(_id, {
+      avatarURL: req.file.path,
+      email: req.body.email ? req.body.email : email,
+    });
+    deleteImg(avatarURL);
+    res.status(200).send({
+      avatarURL: req.file.path,
+      email: data.email,
+    });
+  } catch (e) {
+    res.status(401).send({ message: "Not authorized" });
+  }
+};
+
 exports.logoutReq = logoutReq;
 exports.loginReq = loginReq;
 exports.registerReq = registerReq;
 exports.currentReq = currentReq;
+exports.patchReq = patchReq;
